@@ -1,10 +1,10 @@
-import sys
+import argparse
 
 import random
 import numpy as np
 
 
-def generate_fjsp(jobs, machines, processing_time_min=1, processing_time_max=10, delta_processing_time=3, avg_assigned_machines=None, max_assigned_machines=None):
+def generate_fjsp(jobs, machines, processing_time_min, processing_time_max, delta_processing_time, avg_assigned_machines, max_assigned_machines):
     """Generates a flexible job shop scheduling problem.
 
     Args:
@@ -13,15 +13,15 @@ def generate_fjsp(jobs, machines, processing_time_min=1, processing_time_max=10,
         machines : int
             Number of machines.
         processing_time_min : int
-            Minimum processing time of a operation. Default to 1.
+            Minimum processing time of an operation. Default to 1.
         processing_time_max : int
-            Maximum processing time of a operation. Default to 10.
+            Maximum processing time of an operation. Default to 10.
         delta_processing_time : int
-            Maximum gap of processing time within operations.
+            Maximum gap of processing times within operations. Default to 3.
         avg_assigned_machines : float
-            Average number of machines assigned to a operation. Default to 0.5 * machines.
+            Average number of machines assigned to an operation. Default to 0.5 * machines.
         max_assigned_machines : float
-            Maximum number of machines assigned to a operation. Default to 0.8 * machines.
+            Maximum number of machines assigned to an operation. Default to 0.8 * machines.
 
     Returns:
         None
@@ -51,7 +51,7 @@ def generate_fjsp(jobs, machines, processing_time_min=1, processing_time_max=10,
         if allocation_matrix[j, i] < int(max_assigned_machines):
             allocation_matrix[j, i] += 1
 
-    with open('./Instances/Generated-Instance.txt', 'w') as f:
+    with open('./Instances/data.txt', 'w') as f:
 
         f.write('{0}\t{1}\t{2}\n'.format(
             jobs, machines, avg_assigned_machines))
@@ -84,7 +84,22 @@ def generate_fjsp(jobs, machines, processing_time_min=1, processing_time_max=10,
     return
 
 
-if __name__ == "__main__":
-    JOBS = int(sys.argv[1])
-    MACHINES = int(sys.argv[2])
-    generate_fjsp(JOBS, MACHINES)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('jobs', type=int, help='Number of jobs.')
+    parser.add_argument('machines', type=int, help='Number of machines.')
+    parser.add_argument('-pmin',  '--processing_time_min',
+                        type=int, default=1, help='Minimum processing time of a operation.')
+    parser.add_argument('-pmax',  '--processing_time_max',
+                        type=int, default=10, help='Maximum processing time of a operation.')
+    parser.add_argument('-dp',  '--delta_processing_time',
+                        type=int, default=3, help='Maximum gap of processing time within operations.')
+    parser.add_argument('-am',  '--avg_assigned_machines',
+                        type=float, help='Average number of machines assigned to a operation.')
+    parser.add_argument('-mm',  '--max_assigned_machines',
+                        type=float, help='Maximum number of machines assigned to a operation.')
+
+    args = parser.parse_args()
+    generate_fjsp(args.jobs, args.machines, args.processing_time_min, args.processing_time_max,
+                  args.delta_processing_time, args.avg_assigned_machines, args.max_assigned_machines)
